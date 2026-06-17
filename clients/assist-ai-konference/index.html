@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FENEK^^ — Aby vás nešlo neznat</title>
+  <meta name="description" content="FENEK^^ — komplexní komunikace pro českou technologickou scénu. B2B, IT a SaaS firmy, které chtějí být vidět tam, kde to má smysl." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --sand:      #f3ece1;
+      --sand-deep: #e8dcc8;
+      --ink:       #1a1714;
+      --ink-soft:  #46403a;
+      --ink-faint: #8a7f76;
+      --rust:      #d6492b;
+      --rust-deep: #b03517;
+      --line:      rgba(26, 23, 20, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--sand);
+      color: var(--ink);
+      font-family: "Hanken Grotesk", sans-serif;
+      font-size: clamp(1rem, 0.9rem + 0.3vw, 1.125rem);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(110% 70% at 85% -5%, rgba(214,73,43,0.09), transparent 55%),
+        radial-gradient(90% 60% at -5% 105%, rgba(26,23,20,0.05), transparent 50%);
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 6vw, 4rem);
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(1.5rem, 3vw, 2.5rem) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .logo {
+      font-family: "Fraunces", serif;
+      font-weight: 800;
+      font-size: clamp(1.4rem, 1.1rem + 0.9vw, 1.9rem);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .logo .ears { color: var(--rust); }
+
+    nav a {
+      font-family: "Space Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-soft);
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--rust); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: clamp(4rem, 10vw, 9rem) 0 clamp(3rem, 6vw, 5rem);
+    }
+
+    .hero-eyebrow {
+      font-family: "Space Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: rise 0.6s 0.1s forwards cubic-bezier(0.2,0.8,0.2,1);
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 1.5rem + 8vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: clamp(2rem, 4vw, 3.5rem);
+    }
+    h1 .ears { color: var(--rust); }
+    h1 em {
+      display: block;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--ink-soft);
+    }
+    h1 > span {
+      display: block;
+      opacity: 0;
+      animation: rise 0.8s forwards cubic-bezier(0.2,0.8,0.2,1);
+    }
+    h1 > span:nth-child(1) { animation-delay: 0.2s; }
+    h1 > span:nth-child(2) { animation-delay: 0.35s; }
+
+    .hero-intro {
+      max-width: 48ch;
+      font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+      color: var(--ink-soft);
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.5;
+      opacity: 0;
+      animation: rise 0.8s 0.5s forwards cubic-bezier(0.2,0.8,0.2,1);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 0;
+    }
+
+    /* ── POSITIONING ── */
+    .positioning {
+      padding: clamp(3rem, 7vw, 6rem) 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 5rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .positioning { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+
+    .positioning-label {
+      font-family: "Space Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1.2rem;
+    }
+
+    .positioning-statement {
+      font-family: "Fraunces", serif;
+      font-weight: 700;
+      font-size: clamp(1.6rem, 1rem + 2.5vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      grid-column: 1;
+    }
+
+    .positioning-body {
+      grid-column: 2;
+      padding-top: 0.5rem;
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+    @media (max-width: 700px) {
+      .positioning-statement,
+      .positioning-body { grid-column: 1; }
+    }
+
+    .positioning-body p + p { margin-top: 1rem; }
+
+    .positioning-body strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ── PILLARS ── */
+    .pillars {
+      padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .pillars-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: clamp(2rem, 4vw, 3rem);
+    }
+
+    .section-label {
+      font-family: "Space Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rust);
+      white-space: nowrap;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    @media (max-width: 750px) {
+      .pillars-grid { grid-template-columns: 1fr; }
+    }
+
+    .pillar {
+      padding: 2rem 2.5rem 2rem 0;
+      border-right: 1px solid var(--line);
+      padding-right: 2.5rem;
+    }
+    .pillar:last-child { border-right: none; padding-right: 0; }
+    .pillar:not(:first-child) { padding-left: 2.5rem; }
+    @media (max-width: 750px) {
+      .pillar {
+        border-right: none;
+        border-top: 1px solid var(--line);
+        padding: 1.5rem 0;
+      }
+      .pillar:first-child { border-top: none; padding-top: 0; }
+      .pillar:not(:first-child) { padding-left: 0; }
+    }
+
+    .pillar-num {
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 2.5rem;
+      color: var(--sand-deep);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .pillar-title {
+      font-family: "Fraunces", serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .pillar p {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 1.65;
+    }
+
+    /* ── CLIENTS ── */
+    .clients {
+      padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .clients-inner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem 4rem;
+      align-items: baseline;
+    }
+    @media (max-width: 650px) {
+      .clients-inner { grid-template-columns: 1fr; gap: 1rem; }
+    }
+
+    .clients-names {
+      font-family: "Fraunces", serif;
+      font-weight: 500;
+      font-size: clamp(1.1rem, 0.9rem + 1vw, 1.5rem);
+      color: var(--ink);
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    .clients-names span {
+      color: var(--ink-faint);
+      margin: 0 0.4em;
+      font-weight: 300;
+    }
+
+    /* ── OWN MEDIA ── */
+    .media {
+      padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    @media (max-width: 650px) {
+      .media-grid { grid-template-columns: 1fr; }
+    }
+
+    .media-card {
+      background: rgba(26,23,20,0.035);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 2rem 2.2rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .media-card:hover {
+      background: rgba(214,73,43,0.05);
+      border-color: rgba(214,73,43,0.25);
+    }
+
+    .media-card-title {
+      font-family: "Fraunces", serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .media-card-title .ears { color: var(--rust); }
+
+    .media-card-tag {
+      font-family: "Space Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1rem;
+    }
+
+    .media-card p {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+
+    .media-card-awards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .award-chip {
+      font-family: "Space Mono", monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      background: rgba(26,23,20,0.07);
+      border-radius: 2px;
+      padding: 0.2em 0.6em;
+      color: var(--ink-soft);
+    }
+
+    .media-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: "Space Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-top: 1.2rem;
+      transition: color 0.2s;
+    }
+    .media-card:hover .media-card-link { color: var(--rust); }
+
+    /* ── CTA ── */
+    .contact {
+      padding: clamp(3rem, 7vw, 6rem) 0;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem 4rem;
+      align-items: center;
+    }
+    @media (max-width: 650px) {
+      .contact { grid-template-columns: 1fr; }
+    }
+
+    .contact-text h2 {
+      font-family: "Fraunces", serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 1rem + 3vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-text p {
+      color: var(--ink-soft);
+      font-size: 1rem;
+      max-width: 42ch;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--ink);
+      color: var(--sand);
+      text-decoration: none;
+      font-family: "Space Mono", monospace;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      padding: 1rem 1.7rem;
+      border-radius: 100px;
+      white-space: nowrap;
+      transition: background 0.25s, transform 0.25s;
+    }
+    .cta:hover {
+      background: var(--rust);
+      transform: translateY(-2px);
+    }
+    .cta .arrow { transition: transform 0.25s; }
+    .cta:hover .arrow { transform: translate(3px,-3px); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 2rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 2rem;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Space Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.03em;
+      color: var(--ink-faint);
+    }
+
+    footer a { color: var(--ink-soft); text-decoration: none; }
+    footer a:hover { color: var(--rust); }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+      .hero-eyebrow, h1 > span, .hero-intro { opacity: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <a href="/" class="logo">FENEK<span class="ears">^^</span></a>
+    <nav>
+      <a href="mailto:iris@fenekpr.cz">Kontakt</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Komunikace pro českou tech scénu</p>
+    <h1>
+      <span>Jsme FENEK<span class="ears">^^</span></span>
+      <span><em>Kdo jste vy?</em></span>
+    </h1>
+    <p class="hero-intro">
+      Představte si, že byste se nemuseli představovat.
+      Každý o vás přece slyšel.
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- POSITIONING -->
+  <section class="positioning">
+    <div>
+      <p class="positioning-label">Nejsme pro každého</p>
+      <h2 class="positioning-statement">Nejsme klasická PR agentura.</h2>
+    </div>
+    <div class="positioning-body">
+      <p>Pokud chcete maximalizovat počet mediálních výstupů, existují agentury, které to dělají dobře — a rádi vám je doporučíme.</p>
+      <p>Fenek dává smysl tehdy, kdy <strong>média jsou jen část toho, co potřebujete.</strong> Pracujeme s B2B a IT firmami, které chtějí být vidět tam, kde to rozhoduje — u správných lidí, ve správný čas, s obsahem, který má váhu.</p>
+      <p>Naším teritoriem je česká technologická scéna. Cílem je jediné: aby vás <strong>nešlo neznat.</strong></p>
+    </div>
+  </section>
+
+  <!-- PILLARS -->
+  <section class="pillars">
+    <div class="pillars-header">
+      <span class="section-label">Jak pracujeme</span>
+    </div>
+    <div class="pillars-grid">
+
+      <div class="pillar">
+        <div class="pillar-num">01</div>
+        <h3 class="pillar-title">Profilované media relations</h3>
+        <p>Nevyhrňujeme výstupy plošně. Míříme na B2B a byznys média, která čtou skuteční rozhodovatele. Každý výstup pak vytěžíme do maxima — web, newsletter, LinkedIn. Neslibujeme Forbes do konce roku. Ale nebudeme pálit čas na komentáři pro Blesk.</p>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar-num">02</div>
+        <h3 class="pillar-title">Speaking & eventy</h3>
+        <p>Vyhledáváme a oslovujeme konference, panely, podcasty a webináře, které sedí vašim lidem. Připravíme ambasadory na vystoupení a výsledek pak zúročíme v obsahu. Protože jeden dobrý talk živí komunikaci měsíc.</p>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar-num">03</div>
+        <h3 class="pillar-title">LinkedIn & osobní profily</h3>
+        <p>Váš největší kanál nejsou firemní profily — jsou to lidé. Systematická práce s osobními profily zakladatelů a klíčových lidí generuje větší organický dosah než jakákoliv inzerce. A buduje důvěru, která se nedá koupit.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section class="clients">
+    <div class="clients-inner">
+      <span class="section-label">Pracovali jsme<br>mimo jiné s</span>
+      <p class="clients-names">
+        Uber<span>·</span>Heureka<span>·</span>Emplifi<span>·</span>Deepnote<span>·</span>IP&nbsp;Fabric<span>·</span>BigHub<span>·</span>Novalia<span>·</span>CNC
+      </p>
+    </div>
+  </section>
+
+  <!-- OWN MEDIA -->
+  <section class="media">
+    <span class="section-label">Vlastní média, která jsme postavili pro klienty</span>
+    <div class="media-grid">
+
+      <a class="media-card" href="https://exec.shopsys.cz/" target="_blank" rel="noopener">
+        <div class="media-card-title">EXEC</div>
+        <div class="media-card-tag">pro Shopsys · od 2016</div>
+        <p>Mediální platforma pro e-commerce manažery. Magazín (22+ čísel), newsletter exec fresh (5 000+ odběratelů) a podcast exec talks. Jeden z nejsledovanějších zdrojů české e-commerce scény.</p>
+        <div class="media-card-awards">
+          <span class="award-chip">Ocenění Fenix Content Marketing</span>
+        </div>
+        <span class="media-card-link">exec.shopsys.cz <span>↗</span></span>
+      </a>
+
+      <a class="media-card" href="https://proficio.cz/magazin-pro" target="_blank" rel="noopener">
+        <div class="media-card-title">Magazín Pro</div>
+        <div class="media-card-tag">pro Proficio</div>
+        <p>Oceňovaný B2B magazín pro marketing profesionály. Print i online. Rozhovory s globálními jmény jako Mark Ritson nebo Orlando Wood. Strategický nástroj, který Proficio odlišil od celého trhu.</p>
+        <div class="media-card-awards">
+          <span class="award-chip">Zlatý středník</span>
+          <span class="award-chip">Fenix Content Marketing</span>
+          <span class="award-chip">Webtop 100</span>
+        </div>
+        <span class="media-card-link">proficio.cz/magazin-pro <span>↗</span></span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact">
+    <div class="contact-text">
+      <h2>Chcete, aby vás nešlo neznat?</h2>
+      <p>Napište Iris. Řekneme vám rovnou, jestli jsme pro vás správná volba — a pokud ne, doporučíme, kdo ano.</p>
+    </div>
+    <a href="mailto:iris@fenekpr.cz" class="cta">
+      Napište nám <span class="arrow">↗</span>
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>FENEK<span style="color:var(--rust)">^^</span> — Praha, CZ</span>
+    <span><a href="mailto:iris@fenekpr.cz">iris@fenekpr.cz</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
