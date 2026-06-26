@@ -283,6 +283,33 @@
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    .heart-btn {
+      margin-top: 1.2rem;
+      background: none;
+      border: 1.5px solid #000;
+      color: #000;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      padding: 0.45rem 1.1rem;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      animation: rise 0.8s 0.7s forwards cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .heart-btn:hover { background: #000; color: #fff; }
+    @keyframes floatHeart {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      80%  { opacity: 0.7; }
+      100% { opacity: 0; transform: translateY(-220px) scale(1.4); }
+    }
+    .flying-heart {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.8rem;
+      animation: floatHeart 1.2s ease-out forwards;
+      z-index: 9999;
+    }
     @media (prefers-reduced-motion: reduce) {
       * { animation: none !important; }
       h1 > span, .hero-sub { opacity: 1 !important; }
@@ -307,7 +334,28 @@
       <span><em>Kdo jste vy?</em></span>
     </h1>
     <p class="hero-sub">Ahoj Dano, Arbene a CIP ❤️❤️</p>
+    <button class="heart-btn" onclick="launchHearts(event)">poslat srdíčka ❤️</button>
   </section>
+
+  <script>
+    function launchHearts(e) {
+      const count = 12;
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const h = document.createElement('span');
+          h.className = 'flying-heart';
+          h.textContent = '❤️';
+          const x = e.clientX + (Math.random() - 0.5) * 120;
+          const y = e.clientY + (Math.random() - 0.5) * 40;
+          h.style.left = x + 'px';
+          h.style.top = y + 'px';
+          h.style.fontSize = (1.2 + Math.random() * 1.2) + 'rem';
+          document.body.appendChild(h);
+          h.addEventListener('animationend', () => h.remove());
+        }, i * 60);
+      }
+    }
+  </script>
 
   <!-- ABOUT -->
   <section>
