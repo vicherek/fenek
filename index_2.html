@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FENEK^^</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #110D08;
+            --text:    #F0E6D0;
+            --muted:   #7A6848;
+            --accent:  #C97D2A;
+            --rule:    #241A0F;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+            overflow-x: hidden;
+        }
+
+        /* ─── CUSTOM CURSOR ─── */
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform .1s, opacity .2s;
+        }
+
+        .cursor-ring {
+            width: 32px; height: 32px;
+            border: 1px solid rgba(232, 146, 13, .4);
+            border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width .3s, height .3s, border-color .3s, left .08s, top .08s;
+        }
+
+        .cursor-ring.is-hovering {
+            width: 52px; height: 52px;
+            border-color: var(--accent);
+        }
+
+        /* ─── LAYOUT ─── */
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 56px;
+        }
+
+        hr.rule {
+            border: none;
+            border-top: 1px solid var(--rule);
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+            background: rgba(17,13,8,.95);
+            backdrop-filter: blur(10px);
+            transform: translateY(-100%);
+            animation: navSlide .6s .8s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        @keyframes navSlide {
+            to { transform: translateY(0); }
+        }
+
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto; padding: 0 56px;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem; font-weight: 800;
+            color: var(--text); text-decoration: none;
+            letter-spacing: 0.01em;
+        }
+        .logo span {
+            color: var(--accent);
+            display: inline-block;
+            transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+        }
+        .logo:hover span { transform: rotate(15deg) translateY(-2px); }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-link {
+            font-size: 0.8rem; font-weight: 500;
+            color: var(--muted); text-decoration: none;
+            letter-spacing: 0.04em;
+            transition: color .2s;
+        }
+        .nav-link:hover { color: var(--text); }
+
+        .nav-cta {
+            font-size: 0.8rem; font-weight: 500;
+            color: var(--accent); text-decoration: none;
+            letter-spacing: 0.04em;
+            border: 1px solid var(--accent);
+            padding: 7px 18px; border-radius: 2px;
+            position: relative; overflow: hidden;
+            transition: color .25s;
+        }
+        .nav-cta::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: var(--accent);
+            transform: translateX(-101%);
+            transition: transform .25s cubic-bezier(.16,1,.3,1);
+        }
+        .nav-cta:hover::before { transform: translateX(0); }
+        .nav-cta:hover { color: var(--bg); }
+        .nav-cta span { position: relative; z-index: 1; }
+
+        /* ─── HERO ─── */
+        .hero {
+            padding: 160px 0 120px;
+        }
+
+        .hero-label {
+            font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--muted); margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp .7s .9s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        /* Headline word-by-word reveal */
+        .hero-headline {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.6rem, 7vw, 7rem);
+            font-weight: 800; line-height: 1.0;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 48px;
+            overflow: hidden;
+        }
+
+        .word-wrap {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+
+        .word-inner {
+            display: inline-block;
+            transform: translateY(110%);
+            animation: wordReveal .7s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        .word-wrap:nth-child(1) .word-inner { animation-delay: 1.0s; }
+        .word-wrap:nth-child(2) .word-inner { animation-delay: 1.12s; }
+        .word-wrap:nth-child(3) .word-inner { animation-delay: 1.24s; }
+        .word-wrap:nth-child(4) .word-inner { animation-delay: 1.36s; }
+        .word-wrap:nth-child(5) .word-inner { animation-delay: 1.48s; }
+
+        @keyframes wordReveal {
+            to { transform: translateY(0); }
+        }
+
+        .hero-headline em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero-body {
+            max-width: 520px;
+            opacity: 0;
+            animation: fadeUp .7s 1.6s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        .hero-body p {
+            font-size: 1.05rem;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .hero-body p strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            margin-top: 40px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 700;
+            color: var(--bg);
+            background: var(--accent);
+            padding: 14px 28px; border-radius: 2px;
+            text-decoration: none; letter-spacing: 0.03em;
+            position: relative; overflow: hidden;
+            transition: letter-spacing .3s;
+        }
+        .hero-cta::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: rgba(255,255,255,.12);
+            transform: translateX(-101%);
+            transition: transform .3s cubic-bezier(.16,1,.3,1);
+        }
+        .hero-cta:hover { letter-spacing: 0.06em; }
+        .hero-cta:hover::after { transform: translateX(0); }
+
+        /* ─── SCROLL REVEAL ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── CO DĚLÁME ─── */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-tag {
+            font-size: 0.65rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 48px;
+        }
+
+        .services-list {
+            list-style: none;
+        }
+
+        .services-list li {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 48px;
+            align-items: baseline;
+            padding: 32px 0;
+            border-top: 1px solid var(--rule);
+            position: relative;
+            transition: padding-left .3s cubic-bezier(.16,1,.3,1);
+        }
+
+        .services-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform .3s cubic-bezier(.16,1,.3,1);
+        }
+
+        .services-list li:hover { padding-left: 16px; }
+        .services-list li:hover::before { transform: scaleY(1); }
+
+        .services-list li:last-child {
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .svc-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem; font-weight: 800;
+            color: var(--text);
+            transition: color .2s;
+        }
+
+        .services-list li:hover .svc-name { color: var(--accent); }
+
+        .svc-desc {
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.7;
+            max-width: 560px;
+            transition: color .2s;
+        }
+
+        .services-list li:hover .svc-desc { color: #888; }
+
+        /* ─── PROČ NÁS ─── */
+        .why-intro {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text);
+            margin-bottom: 56px;
+            max-width: 680px;
+        }
+
+        .why-intro em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        /* ─── TICKER ─── */
+        .ticker-wrap {
+            overflow: hidden;
+            border-top: 1px solid var(--rule);
+            border-bottom: 1px solid var(--rule);
+            padding: 22px 0;
+            mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+
+        .ticker-track {
+            display: flex;
+            gap: 0;
+            width: max-content;
+            animation: ticker 22s linear infinite;
+        }
+
+        .ticker-track:hover { animation-play-state: paused; }
+
+        @keyframes ticker {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            white-space: nowrap;
+        }
+
+        .ticker-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem; font-weight: 800;
+            color: #3D2810;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0 40px;
+            transition: color .2s;
+            cursor: default;
+        }
+
+        .ticker-name:hover { color: var(--muted); }
+
+        .ticker-sep {
+            color: var(--accent);
+            font-size: 0.7rem;
+            opacity: .6;
+            user-select: none;
+        }
+
+        /* ─── LOGA ─── */
+        .logos-section {
+            padding: 80px 0;
+        }
+
+        .logos-label {
+            font-size: 0.65rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--muted); margin-bottom: 40px;
+        }
+
+        .logos-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+        }
+
+        .logo-item {
+            flex: 0 0 25%;
+            padding: 32px 0;
+            border-top: 1px solid var(--rule);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 700;
+            color: #3A2810;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: color .3s, letter-spacing .3s;
+            position: relative;
+        }
+
+        .logo-name::after {
+            content: '';
+            position: absolute;
+            bottom: -3px; left: 0; right: 0;
+            height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .3s cubic-bezier(.16,1,.3,1);
+        }
+
+        .logo-item:hover .logo-name {
+            color: var(--muted);
+            letter-spacing: 0.1em;
+        }
+
+        .logo-item:hover .logo-name::after { transform: scaleX(1); }
+
+        .logos-border-bottom {
+            border-top: 1px solid var(--rule);
+        }
+
+        /* ─── TÝM ─── */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            margin-top: 48px;
+        }
+
+        .member {
+            background: #181108;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .member-photo {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: #1C1409;
+            position: relative;
+            overflow: hidden;
+            transition: transform .5s cubic-bezier(.16,1,.3,1);
+        }
+
+        .member:hover .member-photo { transform: scale(1.03); }
+
+        .member-photo::before {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #261A0C;
+            transition: bottom .5s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        .member:hover .member-photo::before { bottom: -20%; }
+
+        .member-photo::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #2E1F0E;
+            transition: top .5s cubic-bezier(.34,1.56,.64,1), background .3s;
+        }
+
+        .member:hover .member-photo::after {
+            top: 18%;
+            background: #3A2812;
+        }
+
+        /* Accent line reveal on hover */
+        .member-photo-accent {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .4s cubic-bezier(.16,1,.3,1);
+            z-index: 2;
+        }
+
+        .member:hover .member-photo-accent { transform: scaleX(1); }
+
+        .member-info {
+            padding: 20px 22px 24px;
+            border-top: 1px solid var(--rule);
+            transition: background .3s;
+        }
+
+        .member:hover .member-info { background: #1E1409; }
+
+        .member-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem; font-weight: 800;
+            color: var(--text); line-height: 1.2;
+            transition: color .2s;
+        }
+
+        .member:hover .member-name { color: var(--accent); }
+
+        .member-role {
+            font-size: 0.72rem;
+            color: var(--accent);
+            margin-top: 4px; margin-bottom: 10px;
+            letter-spacing: 0.02em;
+        }
+
+        .member-spec {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            border-top: 1px solid var(--rule);
+        }
+
+        .footer-inner {
+            max-width: 1100px; margin: 0 auto; padding: 0 56px;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .footer-copy {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .footer-copy a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .footer-copy a:hover { color: var(--text); }
+
+        /* ─── SCROLL PROGRESS BAR ─── */
+        .progress-bar {
+            position: fixed;
+            top: 64px; left: 0;
+            height: 1px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 100;
+            transition: width .05s linear;
+            opacity: .7;
+        }
+
+        /* ─── FOX BUTTON ─── */
+        .fox-btn {
+            display: block;
+            margin-top: 32px;
+            margin-bottom: 48px;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: none;
+            user-select: none;
+            line-height: 1;
+            filter: sepia(20%);
+        }
+        .fox-btn .fox-icon {
+            font-size: 2.2rem;
+            display: inline-block;
+            transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+            filter: grayscale(20%);
+        }
+        .fox-btn:hover .fox-icon { transform: rotate(-12deg) scale(1.25); filter: grayscale(0%); }
+        .fox-btn:active .fox-icon { transform: scale(.9); }
+
+        .fox-particle {
+            position: fixed;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 999;
+            transform-origin: center;
+            animation: foxFly var(--dur, 1.2s) cubic-bezier(.2, 0, .6, 1) forwards;
+        }
+
+        @keyframes foxFly {
+            0%   { opacity: 1; transform: translate(0, 0) scale(1.2) rotate(0deg); }
+            60%  { opacity: .9; }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(.4) rotate(var(--rot)); }
+        }
+
+        .smecka-toast {
+            position: fixed;
+            bottom: 32px; left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            z-index: 201;
+            background: var(--accent);
+            color: var(--bg);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.72rem; font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 7px 13px; border-radius: 2px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .3s, transform .3s cubic-bezier(.16,1,.3,1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .smecka-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17,13,8,.92);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s cubic-bezier(.16,1,.3,1);
+        }
+
+        .modal-overlay.is-open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #181108;
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            padding: 48px;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 24px;
+            position: relative;
+            transform: translateY(24px);
+            transition: transform .4s cubic-bezier(.16,1,.3,1);
+        }
+
+        .modal-overlay.is-open .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1rem;
+            cursor: none;
+            transition: color .2s;
+            line-height: 1;
+            padding: 4px;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        .modal-tag {
+            font-size: 0.65rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 16px;
+        }
+
+        .modal-headline {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem; font-weight: 800;
+            color: var(--text);
+            margin-bottom: 36px;
+            line-height: 1.1;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: #110D08;
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color .2s;
+            resize: none;
+            outline: none;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #3A2810;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-submit {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 700;
+            color: var(--bg);
+            background: var(--accent);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 2px;
+            cursor: none;
+            letter-spacing: 0.03em;
+            transition: letter-spacing .3s;
+        }
+
+        .form-submit:hover { letter-spacing: 0.06em; }
+
+        /* ─── JIRKA TOOLTIP ─── */
+        .jirka-name-wrap {
+            position: relative;
+            display: inline-block;
+        }
+        .jirka-tooltip {
+            position: absolute;
+            bottom: calc(100% + 14px);
+            left: -1px;
+            width: 250px;
+            background: #1C1208;
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            padding: 14px 16px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.74rem;
+            color: #888;
+            line-height: 1.65;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity .25s, transform .25s cubic-bezier(.16,1,.3,1);
+            z-index: 50;
+        }
+        .jirka-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%; left: 18px;
+            border: 5px solid transparent;
+            border-top-color: var(--accent);
+        }
+        .jirka-tooltip .tt-tag {
+            display: block;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 7px;
+            font-weight: 500;
+        }
+        .jirka-tooltip .tt-line {
+            color: var(--text);
+            font-style: italic;
+            margin-top: 8px;
+            display: block;
+            font-size: 0.72rem;
+        }
+        .jirka-name-wrap:hover .jirka-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">FENEK<span>^^</span></a>
+        <div class="nav-links">
+            <a href="case-studies.html" class="nav-link">Case studies</a>
+            <a href="mailto:hello@fenekpr.cz" class="nav-cta"><span>Napište nám →</span></a>
+        </div>
+    </div>
+</nav>
+
+
+<!-- KDO JSME -->
+<div class="wrap">
+    <section class="hero">
+        <p class="hero-label">Fenek^^ — Strategická komunikace</p>
+        <h1 class="hero-headline">
+            <span class="word-wrap"><span class="word-inner">Jsme&nbsp;</span></span><span class="word-wrap"><span class="word-inner">FENEK<em>^^</em></span></span><br>
+            <span class="word-wrap"><span class="word-inner">Kdo&nbsp;</span></span><span class="word-wrap"><span class="word-inner">jste&nbsp;</span></span><span class="word-wrap"><span class="word-inner">vy?</span></span>
+        </h1>
+        <button class="fox-btn" id="foxBtn"><span class="fox-icon">🦊</span></button>
+        <div class="hero-body">
+            <p>Děláme PR a strategickou komunikaci pro <strong>českou tech scénu</strong>. Firmy, které chtějí být vidět tam, kde se rozhoduje — u správných lidí, ve správný čas, s obsahem, který má váhu.</p>
+            <a href="#" class="hero-cta" id="openModal">Chci se přestat představovat →</a>
+        </div>
+    </section>
+</div>
+
+<hr class="rule">
+
+
+<!-- CO DĚLÁME -->
+<div class="wrap">
+    <section class="section">
+        <p class="section-tag reveal">Co děláme</p>
+        <ul class="services-list">
+            <li class="reveal">
+                <span class="svc-name">Strategie</span>
+                <span class="svc-desc">Audit odhalí, kde komunikace drhne. Strategie určí, co s tím — od toho, jak vás vnímají, po plán, který lze skutečně realizovat.</span>
+            </li>
+            <li class="reveal" style="transition-delay:.1s">
+                <span class="svc-name">Obsah</span>
+                <span class="svc-desc">LinkedIn, který čtou lidé co rozhodují. Odborné články, které citují média. Obsah, který dělá práci dlouho po zveřejnění.</span>
+            </li>
+            <li class="reveal" style="transition-delay:.2s">
+                <span class="svc-name">Vliv</span>
+                <span class="svc-desc">Správná média, správní novináři, správný moment. Dobrá tiskovka se nečte — cituje se. Na tom pracujeme.</span>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<hr class="rule">
+
+
+<!-- PROČ NÁS CHTÍT -->
+<div class="wrap">
+    <section class="section">
+        <p class="section-tag reveal">Proč Fenek</p>
+        <p class="why-intro reveal">Už se díky nám<br>nemusejí představovat.</p>
+        <div class="ticker-wrap reveal">
+            <div class="ticker-track">
+                <!-- set 1 -->
+                <div class="ticker-item"><span class="ticker-name">Apify</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Emplifi</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Kentico</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Cleevio</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Data Talk</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">BigHub</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Pocket Virtuality</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Appsatori</span><span class="ticker-sep">^^</span></div>
+                <!-- set 2 — duplicate for seamless loop -->
+                <div class="ticker-item"><span class="ticker-name">Apify</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Emplifi</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Kentico</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Cleevio</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Data Talk</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">BigHub</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Pocket Virtuality</span><span class="ticker-sep">^^</span></div>
+                <div class="ticker-item"><span class="ticker-name">Appsatori</span><span class="ticker-sep">^^</span></div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<hr class="rule">
+
+
+<!-- TÝM -->
+<div class="wrap">
+    <section class="section">
+        <p class="section-tag reveal">Tým</p>
+        <div class="team-grid">
+
+            <div class="member reveal">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Klára Sýkorová</div>
+                    <div class="member-role">CEO</div>
+                </div>
+            </div>
+
+            <div class="member reveal" style="transition-delay:.07s">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Adéla Ščurková</div>
+                    <div class="member-role">PR Specialistka</div>
+                </div>
+            </div>
+
+            <div class="member reveal" style="transition-delay:.14s">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Martin Schwarz</div>
+                    <div class="member-role">LinkedIn &amp; Copy</div>
+                </div>
+            </div>
+
+            <div class="member reveal" style="transition-delay:.21s">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Maja Texlerová</div>
+                    <div class="member-role">Copywriterka</div>
+                </div>
+            </div>
+
+            <div class="member reveal" style="transition-delay:.28s">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Iris Stromská</div>
+                    <div class="member-role">Backoffice</div>
+                </div>
+            </div>
+
+            <div class="member reveal" style="transition-delay:.35s">
+                <div class="member-photo">
+                    <div class="member-photo-accent"></div>
+                </div>
+                <div class="member-info">
+                    <div class="member-name">
+                        <span class="jirka-name-wrap">Jirka Vicherek
+                            <div class="jirka-tooltip">
+                                <span class="tt-tag">🦊 původ jména</span>
+                                Vulpes zerda — pouštní lišák s obřima ušima. Slyší vše, co ostatní přehlédnou. Vidí v noci. Přehlédnete ho snadno. Zapamatujete si ho navždy.
+                                <span class="tt-line">"Chtěli jsme jméno, které není nafouklé. Fenek prostě ví, co dělá."</span>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="member-role">Zakladatel</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+
+<!-- MODAL -->
+<div class="modal-overlay" id="contactModal">
+    <div class="modal-box">
+        <button class="modal-close" id="modalClose">✕</button>
+        <p class="modal-tag">Kontakt</p>
+        <h2 class="modal-headline">Kdo jste vy?</h2>
+        <form class="contact-form" action="https://formspree.io/f/myegqdvw" method="POST">
+            <div class="form-group">
+                <label for="fname">Jméno a firma</label>
+                <input type="text" id="fname" name="name" placeholder="Fenek Berberský, Pouštní duna s.r.o." required>
+            </div>
+            <div class="form-group">
+                <label for="femail">E-mail</label>
+                <input type="email" id="femail" name="email" placeholder="fenek@poustniduna.cz" required>
+            </div>
+            <div class="form-group">
+                <label for="fmessage">Co potřebujete</label>
+                <textarea id="fmessage" name="message" rows="4" placeholder="Popište nám, co řešíte..." required></textarea>
+            </div>
+            <button type="submit" class="form-submit">Odeslat →</button>
+        </form>
+    </div>
+</div>
+
+<div class="smecka-toast" id="smeckaToast">Work in progress. Kafe na stole. Přijďte.</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <span class="footer-copy">© 2026 FENEK^^ &nbsp;·&nbsp; IČO: 05948576 &nbsp;·&nbsp; 5. května 794/56, 140 00 Praha 4 – Nusle</span>
+        <span class="footer-copy">
+            <a href="mailto:hello@fenekpr.cz">hello@fenekpr.cz</a>
+            &nbsp;·&nbsp;
+            <a href="https://www.linkedin.com/company/fenek/posts/?feedView=all" target="_blank">LinkedIn</a>
+        </span>
+    </div>
+</footer>
+
+
+<script>
+    // ─── CUSTOM CURSOR ───
+    const dot  = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.left = mouseX + 'px';
+        dot.style.top  = mouseY + 'px';
+    });
+
+    // Slightly lagging ring
+    function animateRing() {
+        ringX += (mouseX - ringX) * 0.15;
+        ringY += (mouseY - ringY) * 0.15;
+        ring.style.left = ringX + 'px';
+        ring.style.top  = ringY + 'px';
+        requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Hover expansion
+    const hoverTargets = document.querySelectorAll('a, button, li, .member, .logo-item');
+    hoverTargets.forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('is-hovering'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('is-hovering'));
+    });
+
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', () => {
+        dot.style.opacity = '0';
+        ring.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+    });
+
+    // ─── SCROLL PROGRESS BAR ───
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const total = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (scrolled / total * 100) + '%';
+    });
+
+    // ─── FOX CONFETTI ───
+    const foxBtn = document.getElementById('foxBtn');
+    const toast  = document.getElementById('smeckaToast');
+    let toastTimer = null;
+
+    foxBtn.addEventListener('click', () => {
+        const rect = foxBtn.getBoundingClientRect();
+        const cx = rect.left + rect.width  / 2;
+        const cy = rect.top  + rect.height / 2;
+        const count = 26;
+
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'fox-particle';
+            p.textContent = '🦊';
+            const angle = (Math.PI * 2 / count) * i + (Math.random() - .5) * .5;
+            const dist  = 120 + Math.random() * 220;
+            const tx    = Math.cos(angle) * dist;
+            const ty    = Math.sin(angle) * dist;
+            const dur   = (.6 + Math.random() * .7) + 's';
+            const rot   = ((Math.random() - .5) * 540) + 'deg';
+            const delay = Math.random() * 80;
+            p.style.cssText = `left:${cx}px; top:${cy}px; --tx:${tx}px; --ty:${ty}px; --dur:${dur}; --rot:${rot}; animation-delay:${delay}ms;`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1800);
+        }
+
+        // Toast "Smečka roste."
+        if (toastTimer) clearTimeout(toastTimer);
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    });
+
+    // fox button is hoverable like other interactive elements
+    foxBtn.addEventListener('mouseenter', () => ring.classList.add('is-hovering'));
+    foxBtn.addEventListener('mouseleave', () => ring.classList.remove('is-hovering'));
+
+    // ─── MODAL ───
+    const modal      = document.getElementById('contactModal');
+    const modalClose = document.getElementById('modalClose');
+    const openModal  = document.getElementById('openModal');
+
+    function openContactModal(e) {
+        e.preventDefault();
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactModal() {
+        modal.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    openModal.addEventListener('click', openContactModal);
+    modalClose.addEventListener('click', closeContactModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeContactModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeContactModal(); });
+
+    modalClose.addEventListener('mouseenter', () => ring.classList.add('is-hovering'));
+    modalClose.addEventListener('mouseleave', () => ring.classList.remove('is-hovering'));
+
+    // ─── SCROLL REVEAL ───
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
